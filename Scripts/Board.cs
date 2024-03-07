@@ -20,7 +20,6 @@ public class Board : MonoBehaviour
 
     Tile startTile;
     Tile endTile;
- 
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +29,10 @@ public class Board : MonoBehaviour
         SetupBoard();
         PositionCamera();
         SetupPieces();
+    }
+    private void Update() {
+        FallDown();
+        spawnPiece();
     }
 
     private void SetupPieces()
@@ -121,5 +124,52 @@ public class Board : MonoBehaviour
         }
 
         return false;
+    }
+    public Piece GetPiece(int x, int y)
+    {
+        if(x < 0 || x >= width || y < 0 || y >= height)
+        {
+            return null;
+        }
+        return Pieces[x, y];
+    }
+    private void FallDown()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if(Pieces[x,y] == null)
+                {
+                    for (int pos = y+1; pos < height; pos++)
+                    {
+                        if(Pieces[x,pos] != null)
+                        {
+                            Pieces[x, pos].Move(x, y);
+                            Pieces[x, y] = Pieces[x, pos];
+                            Pieces[x, pos] = null;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void spawnPiece()
+    {
+        // if there is an empty space in top board
+        for (int i = 0; i < width; i++)
+        {
+            if (GetPiece(i, height-1) == null)
+            {
+                // spawn a new piece
+                var selectedPiece = avalaiblePieces[UnityEngine.Random.Range(0,avalaiblePieces.Length)];
+                var o = Instantiate(selectedPiece, new Vector3(i, height-1, -5), Quaternion.identity);
+                o.transform.parent = transform;
+                Pieces[i, height-1] = o.GetComponent<Piece>();
+                Pieces[i, height-1]?.Setup(i, height-1, this);
+            }
+        }
     }
 }
