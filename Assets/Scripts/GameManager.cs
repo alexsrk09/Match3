@@ -5,6 +5,8 @@ using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] GameObject mainScreen;
+    [SerializeField] GameObject gameOverScreen;
 
     public static GameManager Instance;
 
@@ -46,6 +48,11 @@ public class GameManager : MonoBehaviour
                 gameState = GameState.GameOver;
             }
         }
+        else if(gameState == GameState.GameOver)
+        {
+            mainScreen.SetActive(false);
+            gameOverScreen.SetActive(true);
+        }
     }
 
     public void AddPoints (int newPoints)
@@ -54,8 +61,4 @@ public class GameManager : MonoBehaviour
         OnPointsUpdated?.Invoke();
         currentTimeToMatch = 0;
     } 
- 
-
-   
-  
 }
